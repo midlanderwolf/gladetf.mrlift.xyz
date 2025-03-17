@@ -13,7 +13,8 @@
     {% if exception.args %}
         <p>{{ exception }}</p>
     {% else %}
-        <p>you took a wrong turn, and this page doesn't exist :P</p>
+        <p>you took a wrong turn, and this page doesn't exist.</p>
+        <p><b><i>did you forget you're on diversion?</i></b></p>
     {% endif %}
 
     <form method="get" action="/search" class="search">
