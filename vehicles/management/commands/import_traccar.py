@@ -45,20 +45,14 @@ def has_stop(stop):
 class Command(ImportLiveVehiclesCommand):
     source_name = "Traccar"
     previous_locations = {}
-
+    
     def handle(self, *args, **options):
-        """ This is the missing piece — Django expects handle() to exist. """
-        print("Starting Traccar vehicle import...")
-        self.do_source()
-
-    def do_source(self):
+        operator_filter = options.get('operator')
+        if operator_filter:
+            self.operators = Operator.objects.filter(noc=operator_filter).in_bulk(field_name="noc")
+        else:
+            self.operators = Operator.objects.all().in_bulk(field_name="noc")
         self.vehicle_cache = {}
-
-        print(f"Operators loaded: {self.operators.keys()}")
-        
-        # Run main logic
-        super().do_source()
-
         # Reschedule after 15 seconds
         self.schedule_next_run(15)
 
