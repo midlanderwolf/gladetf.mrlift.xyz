@@ -47,20 +47,33 @@ class Command(ImportLiveVehiclesCommand):
     previous_locations = {}
     
     def handle(self, *args, **options):
+        """Main entry point — keeps running indefinitely."""
         operator_filter = options.get('operator')
         if operator_filter:
             self.operators = Operator.objects.filter(noc=operator_filter).in_bulk(field_name="noc")
         else:
             self.operators = Operator.objects.all().in_bulk(field_name="noc")
         self.vehicle_cache = {}
-        # Reschedule after 15 seconds
-        self.schedule_next_run(15)
+    
+        print("Starting Traccar data fetch...")
+    
+        # Keep fetching data in a loop
+        while True:
+            try:
+                self.do_source()  # Process the data
+                self.schedule_next_run(15)  # Wait and repeat
+            except KeyboardInterrupt:
+                print("Stopping Traccar fetch. Goodbye!")
+                break
+            except Exception as e:
+                print(f"Error encountered: {e}. Retrying in 15 seconds...")
+                time.sleep(15)
 
-    def schedule_next_run(self, interval):
-        """ Keep running the command every 'interval' seconds """
-        print(f"Next data fetch in {interval} seconds...")
-        time.sleep(interval)
-        self.do_source()
+def schedule_next_run(self, interval):
+    """ Pauses for the given interval before the next fetch. """
+    print(f"Next data fetch in {interval} seconds...")
+    time.sleep(interval)
+
         
 
     @staticmethod
