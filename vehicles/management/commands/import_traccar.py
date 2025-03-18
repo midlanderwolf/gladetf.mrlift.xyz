@@ -53,9 +53,6 @@ class Command(ImportLiveVehiclesCommand):
 
     def do_source(self):
         self.vehicle_cache = {}
-        self.operators = Operator.objects.filter(
-            Q(parent="midland Group") | Q(noc__in=["MDEM"])
-        ).in_bulk(field_name="noc")
 
         print(f"Operators loaded: {self.operators.keys()}")
         
