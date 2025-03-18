@@ -43,18 +43,18 @@ def has_stop(stop):
 class Command(ImportLiveVehiclesCommand):
     source_name = "Traccar"
     previous_locations = {}
-
+    
     def do_source(self):
-        # Initialize vehicle_cache here
         self.vehicle_cache = {}
-
-        # Load operators
         self.operators = Operator.objects.filter(
             Q(parent="midland Group") | Q(noc__in=["MDEM"])
-        ).in_bulk(field_name="noc")  # Store operators by their "noc" field
-
-        print(f"Operators loaded: {self.operators.keys()}")  # Debugging print
-
+        ).in_bulk(field_name="noc")
+    
+        print(f"Operators loaded: {self.operators.keys()}")
+    
+        # Run this every 30 seconds instead of waiting 2 minutes
+        self.schedule_next_run(15)  
+    
         return super().do_source()
 
     @staticmethod
