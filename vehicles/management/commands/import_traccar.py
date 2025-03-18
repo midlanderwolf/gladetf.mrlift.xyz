@@ -107,7 +107,7 @@ class Command(ImportLiveVehiclesCommand):
     def fetch_traccar_devices(self):
         """ Fetch additional vehicle details from Traccar API's /devices endpoint """
         response = requests.get(
-            f"{TRACCAR_API_URL}/devices",
+            f"{TRACCAR_API_URL}/devices?all=true",
             auth=(TRACCAR_USER, TRACCAR_PASSWORD),
             headers={"Authorization": f"Bearer {TRACCAR_API_KEY}"},
         )
@@ -124,7 +124,7 @@ class Command(ImportLiveVehiclesCommand):
     def fetch_traccar_data(self):
         """ Fetch the live vehicle data from Traccar API """
         response = requests.get(
-            f"{TRACCAR_API_URL}/positions",
+            f"{TRACCAR_API_URL}/positions?all=true",
             auth=(TRACCAR_USER, TRACCAR_PASSWORD),
             headers={"Authorization": f"Bearer {TRACCAR_API_KEY}"},
         )
