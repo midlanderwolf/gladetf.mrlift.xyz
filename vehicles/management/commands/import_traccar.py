@@ -45,37 +45,25 @@ def has_stop(stop):
 class Command(ImportLiveVehiclesCommand):
     source_name = "Traccar"
     previous_locations = {}
-    
+
     def handle(self, *args, **options):
-        """Main entry point — keeps running indefinitely."""
         operator_filter = options.get('operator')
         if operator_filter:
             self.operators = Operator.objects.filter(noc=operator_filter).in_bulk(field_name="noc")
         else:
             self.operators = Operator.objects.all().in_bulk(field_name="noc")
         self.vehicle_cache = {}
-    
-        print("Starting Traccar data fetch...")
-    
-        # Keep fetching data in a loop
+
+        # Keep the script running indefinitely
         while True:
-            try:
-                self.do_source()  # Process the data
-                self.schedule_next_run(15)  # Wait and repeat
-            except KeyboardInterrupt:
-                print("Stopping Traccar fetch. Goodbye!")
-                break
-            except Exception as e:
-                print(f"Error encountered: {e}. Retrying in 15 seconds...")
-                time.sleep(15)
+            self.do_source()
+            self.schedule_next_run(15)
 
-    def schedule_next_run(self, interval):
-        """ Pauses for the given interval before the next fetch. """
-        print(f"Next data fetch in {interval} seconds...")
-        time.sleep(interval)
-
+        def schedule_next_run(self, interval):
+            """ Pauses for the given interval before the next fetch. """
+            print(f"Next data fetch in {interval} seconds...")
+            time.sleep(interval)
         
-
     @staticmethod
     def get_datetime(item):
         """ Get datetime from Traccar data item """
