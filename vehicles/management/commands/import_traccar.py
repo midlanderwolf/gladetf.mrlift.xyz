@@ -69,10 +69,10 @@ class Command(ImportLiveVehiclesCommand):
                 print(f"Error encountered: {e}. Retrying in 15 seconds...")
                 time.sleep(15)
 
-def schedule_next_run(self, interval):
-    """ Pauses for the given interval before the next fetch. """
-    print(f"Next data fetch in {interval} seconds...")
-    time.sleep(interval)
+    def schedule_next_run(self, interval):
+        """ Pauses for the given interval before the next fetch. """
+        print(f"Next data fetch in {interval} seconds...")
+        time.sleep(interval)
 
         
 
