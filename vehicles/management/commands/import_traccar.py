@@ -42,9 +42,14 @@ def has_stop(stop):
     )
 
 
-class Command(BaseCommand):
+class Command(ImportLiveVehiclesCommand):
     source_name = "Traccar"
     previous_locations = {}
+
+    def handle(self, *args, **options):
+        """ This is the missing piece — Django expects handle() to exist. """
+        print("Starting Traccar vehicle import...")
+        self.do_source()
 
     def do_source(self):
         self.vehicle_cache = {}
