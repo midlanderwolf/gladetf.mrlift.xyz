@@ -1,9 +1,11 @@
 import requests
+import time
 from datetime import datetime, timezone
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import Exists, OuterRef, Q
 from django.db import IntegrityError
+from django.core.management.base import BaseCommand
 
 from busstops.models import Operator, Service, StopPoint
 from ...models import Vehicle, VehicleJourney, VehicleLocation
@@ -40,22 +42,30 @@ def has_stop(stop):
     )
 
 
-class Command(ImportLiveVehiclesCommand):
+class Command(BaseCommand):
     source_name = "Traccar"
     previous_locations = {}
-    
+
     def do_source(self):
         self.vehicle_cache = {}
         self.operators = Operator.objects.filter(
             Q(parent="midland Group") | Q(noc__in=["MDEM"])
         ).in_bulk(field_name="noc")
-    
+
         print(f"Operators loaded: {self.operators.keys()}")
-    
-        # Run this every 30 seconds instead of waiting 2 minutes
-        self.schedule_next_run(15)  
-    
-        return super().do_source()
+        
+        # Run main logic
+        super().do_source()
+
+        # Reschedule after 15 seconds
+        self.schedule_next_run(15)
+
+    def schedule_next_run(self, interval):
+        """ Keep running the command every 'interval' seconds """
+        print(f"Next data fetch in {interval} seconds...")
+        time.sleep(interval)
+        self.do_source()
+        
 
     @staticmethod
     def get_datetime(item):
